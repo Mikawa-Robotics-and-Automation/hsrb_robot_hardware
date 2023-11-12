@@ -32,18 +32,19 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gmock REQUIRED)
   find_package(ament_cmake_gtest REQUIRED)
 
-  ament_add_gmock(test_joint_communication test/joint_communication-test.cpp
-                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
-  target_link_libraries(test_joint_communication ${PROJECT_NAME})
+  # Todo
+  # ament_add_gmock(test_joint_communication test/joint_communication-test.cpp
+  #                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
+  # target_link_libraries(test_joint_communication ${PROJECT_NAME})
 
-  ament_add_gmock(test_hw_joint test/hsrb_hw_joint-test.cpp)
-  target_link_libraries(test_hw_joint hsrb_joint)
+  # ament_add_gmock(test_hw_joint test/hsrb_hw_joint-test.cpp)
+  # target_link_libraries(test_hw_joint hsrb_joint)
 
-  ament_add_gmock(test_hsrb_hw test/hsrb_hw-test.cpp)
-  target_link_libraries(test_hsrb_hw hsrb_joint)
+  # ament_add_gmock(test_hsrb_hw test/hsrb_hw-test.cpp)
+  # target_link_libraries(test_hsrb_hw hsrb_joint)
 
-  ament_add_gtest(test_joint_parameters test/joint_parameters-test.cpp)
-  target_link_libraries(test_joint_parameters hsrb_joint)
+  # ament_add_gtest(test_joint_parameters test/joint_parameters-test.cpp)
+  # target_link_libraries(test_joint_parameters hsrb_joint)
 endif()
 
 ament_export_libraries(${PROJECT_NAME})

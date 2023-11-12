@@ -49,12 +49,12 @@ const int32_t kDefaultNetworkTick = 10000;
 namespace hsrb_robot_hardware {
 
 template<class Network, class Protocol, class JointComm, class GripperComm, class Joint, class Gripper>
-hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::configure(
-    const hardware_interface::HardwareInfo& info) {
+rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn 
+  HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::on_init(const hardware_interface::HardwareInfo & info) {
   auto nh = rclcpp::Node::make_shared("controller_manager");
   if (info.joints.empty()) {
     RCLCPP_FATAL(nh->get_logger(), "No joint settings.");
-    return hardware_interface::return_type::ERROR;
+    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
   }
 
   std::vector<JointParameters> joint_param_seq;
@@ -68,7 +68,7 @@ hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, Gripper
   if (error) {
     RCLCPP_FATAL_STREAM(nh->get_logger(),
                         "System cannot communicate with servo motors. Error message: " << error.message());
-    return hardware_interface::return_type::ERROR;
+    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
   }
   protocol_ = boost::make_shared<Protocol>(network_);
 
@@ -76,7 +76,7 @@ hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, Gripper
   auto package_path = ament_index_cpp::get_package_share_directory("exxx_control_table");
   if (!LoadControlTable(protocol_, joint_param_seq.front().motor_id, package_path, table)) {
     RCLCPP_FATAL(nh->get_logger(), "System cannot load control table.");
-    return hardware_interface::return_type::ERROR;
+    return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
   }
 
   for (auto i = 0; i < joint_param_seq.size(); ++i) {
@@ -92,7 +92,7 @@ hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, Gripper
     }
   }
 
-  return BaseInterface::configure(info);
+  return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
 template<class Network, class Protocol, class JointComm, class GripperComm, class Joint, class Gripper>
@@ -117,16 +117,18 @@ HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::export_co
   return command_interfaces;
 }
 
-template<class Network, class Protocol, class JointComm, class GripperComm, class Joint, class Gripper>
-hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::start() {
-  for (auto joint : active_joints_) {
-    joint->start();
-  }
-  return hardware_interface::return_type::OK;
-}
+// template<class Network, class Protocol, class JointComm, class GripperComm, class Joint, class Gripper>
+// hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::start() {
+//   for (auto joint : active_joints_) {
+//     joint->start();
+//   }
+//   return hardware_interface::return_type::OK;
+// }
 
 template<class Network, class Protocol, class JointComm, class GripperComm, class Joint, class Gripper>
-hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::read() {
+hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::read(const rclcpp::Time & time, const rclcpp::Duration & period) {
+  (void) time;
+  (void) period;
   for (auto joint : active_joints_) {
     joint->read();
   }
@@ -134,7 +136,9 @@ hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, Gripper
 }
 
 template<class Network, class Protocol, class JointComm, class GripperComm, class Joint, class Gripper>
-hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::write() {
+hardware_interface::return_type HsrbHwBase<Network, Protocol, JointComm, GripperComm, Joint, Gripper>::write(const rclcpp::Time & time, const rclcpp::Duration & period) {
+  (void) time;
+  (void) period;
   for (auto joint : active_joints_) {
     joint->write();
   }
